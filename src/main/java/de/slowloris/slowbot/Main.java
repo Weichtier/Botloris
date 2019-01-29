@@ -5,6 +5,7 @@ import de.slowloris.slowbot.ts3.core.TeamspeakBot;
 public class Main {
     public static void main(String[] args){
 
+
         TeamspeakBot tsBot = TeamspeakBot.newInstance("192.168.0.55", "serveradmin", "marvinwenk1324", "Putze");
 
 

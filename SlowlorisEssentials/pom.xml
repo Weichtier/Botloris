@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.slowloris</groupId>
-    <artifactId>testplugin</artifactId>
+    <groupId>de.slowloris.slowbot.plugins</groupId>
+    <artifactId>SlowlorisEssentials</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <build>
@@ -17,9 +17,17 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.slowloris.testplugin.core.Main</mainClass>
+                            <mainClass>de.slowloris.slowbot.plugins.slowlorisessentials.core.Main</mainClass>
                         </manifest>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>

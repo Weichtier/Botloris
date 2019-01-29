@@ -1,0 +1,8 @@
+test: Test
+Welcomemessage.Message: Welcome on this Server!
+Welcomemessage.Activated: true
+Afk.AfkTime: 600
+Afk.ChannelId: 2
+Afk.MovedMessage: You got moved because you were 10 minutes away!
+Afk.BlockedGroups:
+- '11'
