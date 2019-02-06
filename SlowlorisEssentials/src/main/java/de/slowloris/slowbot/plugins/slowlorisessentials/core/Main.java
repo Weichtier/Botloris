@@ -21,7 +21,7 @@ public class Main extends TeamspeakPlugin {
     public void onEnable() {
         instance = this;
 
-        File file = new File("plugins/SlowlorisEssentials/config.yml");
+        File file = new File(getDataFolder(), "config.yml");
 
         if(!file.exists()){
             file.getParentFile().mkdirs();

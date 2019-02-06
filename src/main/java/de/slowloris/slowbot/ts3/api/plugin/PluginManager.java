@@ -48,6 +48,7 @@ public class PluginManager {
 
         TeamspeakPlugin plugin = (TeamspeakPlugin) cl.newInstance();
         plugins.add(plugin);
+        plugin.setDataFolder("plugins/" + jar.getName().replaceAll(".jar", "") + "/");
         plugin.onEnable();
 
         System.out.println("Loaded Plugin!");

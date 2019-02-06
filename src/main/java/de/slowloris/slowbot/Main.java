@@ -11,14 +11,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Main {
+
+    private static File pluginfolder = new File("plugins");
+
     public static void main(String[] args){
 
         Configuration configuration;
 
+        if(!pluginfolder.exists()) pluginfolder.mkdir();
+
         File file = new File("./config.yml");
 
         if(!file.exists()){
-            new File(file.getParentFile().getAbsolutePath()).mkdirs();
             try {
                 file.createNewFile();
             } catch (IOException e) {
