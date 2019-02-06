@@ -1,8 +1,18 @@
-test: Test
-Welcomemessage.Message: Welcome on this Server!
-Welcomemessage.Activated: true
-Afk.AfkTime: 600
-Afk.ChannelId: 2
-Afk.MovedMessage: You got moved because you were 10 minutes away!
-Afk.BlockedGroups:
-- '11'
+Welcomemessage:
+  Activated: true
+  Message: Welcome on this Server!
+Afk:
+  ChannelId: 280
+  MovedMessage: You got moved because you were 10 minutes away!
+  AfkTime: 10
+  BlockedGroups:
+  - '128'
+Admin:
+  AdminGroupId: 6
+Usercounter:
+  Enabled: false
+  ChannelId: 0
+  ChannelName: 'Users Online: %USERS%'
+BadNicknames:
+- ImABadUsername
+- ImTheSecondBadUsername

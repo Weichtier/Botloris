@@ -4,7 +4,6 @@ import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.api.event.TS3Listener;
 import de.slowloris.slowbot.ts3.api.command.Command;
 import de.slowloris.slowbot.ts3.api.command.CommandHandler;
-import de.slowloris.slowbot.ts3.api.configuration.YamlConfiguration;
 import de.slowloris.slowbot.ts3.core.TeamspeakBot;
 import org.apache.commons.io.FilenameUtils;
 
@@ -39,7 +38,7 @@ public class PluginManager {
             return;
         }
 
-        System.out.println("Loading " + file.getName());
+        System.out.println("Loading Plugin");
 
         JarFile jar = new JarFile(file);
         Manifest manifest = jar.getManifest();
@@ -51,7 +50,7 @@ public class PluginManager {
         plugins.add(plugin);
         plugin.onEnable();
 
-        System.out.println("Loaded " + file.getName());
+        System.out.println("Loaded Plugin!");
 
     }
 
@@ -70,6 +69,21 @@ public class PluginManager {
             } catch (InstantiationException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void unloadPlugin(TeamspeakPlugin plugin){
+        if(plugins.contains(plugin)){
+            System.out.println("Unloading Plugin!");
+            plugin.onDisable();
+            plugins.remove(plugin);
+            System.out.println("Unloaded Plugin!");
+        }
+    }
+
+    public void unloadPlugins(){
+        for (TeamspeakPlugin plugin : plugins) {
+            unloadPlugin(plugin);
         }
     }
 

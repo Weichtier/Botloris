@@ -1,111 +1,136 @@
 package de.slowloris.slowbot.ts3.api.configuration;
 
+import com.google.common.base.Charsets;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+public class YamlConfiguration extends ConfigurationProvider
+{
 
-public class YamlConfiguration {
+    private final ThreadLocal<Yaml> yaml = new ThreadLocal<Yaml>()
+    {
+        @Override
+        protected Yaml initialValue()
+        {
+            Representer representer = new Representer()
+            {
+                {
+                    representers.put( Configuration.class, new Represent()
+                    {
+                        @Override
+                        public Node representData(Object data)
+                        {
+                            return represent( ( (Configuration) data ).self );
+                        }
+                    } );
+                }
+            };
 
-    private File file;
-    private Map<String, Object> entrys;
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
 
-    public YamlConfiguration(File file) {
-        this.file = file;
-
-        if(!this.file.exists()){
-            try {
-                this.file.getParentFile().mkdirs();
-                boolean created = this.file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
+            return new Yaml( new Constructor(), representer, options );
         }
+    };
 
-
-        Yaml yaml = new Yaml();
-        entrys = new HashMap<String, Object>();
-        InputStream inputStream;
-        try {
-            inputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return;
+    @Override
+    public void save(Configuration config, File file) throws IOException
+    {
+        try ( Writer writer = new OutputStreamWriter( new FileOutputStream( file ), Charsets.UTF_8 ) )
+        {
+            save( config, writer );
         }
-        entrys = yaml.load(inputStream);
     }
 
-    public String getString(String key){
-        return get(key) instanceof String ? (String) get(key) : null;
+    @Override
+    public void save(Configuration config, Writer writer)
+    {
+        yaml.get().dump( config.self, writer );
     }
 
-    public Integer getInt(String key){
-        return get(key) instanceof Integer ? (Integer) get(key) : null;
+    @Override
+    public Configuration load(File file) throws IOException
+    {
+        return load( file, null );
     }
 
-    public Double getDouble(String key){
-        return get(key) instanceof Double ? (Double) get(key) : null;
-    }
-
-    public Float getFloat(String key){
-        return get(key) instanceof Float ? (Float) get(key) : null;
-    }
-
-    public Boolean getBoolean(String key){
-        return get(key) instanceof Boolean ? (Boolean) get(key) : null;
-    }
-
-    public List<String> getStringList(String key){
-        return get(key) instanceof List ? (List<String>) get(key) : null;
-    }
-
-    public Object get(String key){
-
-        return entrys.containsKey(key) ? entrys.get(key) : null;
-    }
-
-    public YamlConfiguration set(String key, Object value){
-        if(entrys == null){
-            entrys = new HashMap<String, Object>();
+    @Override
+    public Configuration load(File file, Configuration defaults) throws IOException
+    {
+        try ( FileInputStream is = new FileInputStream( file ) )
+        {
+            return load( is, defaults );
         }
-        entrys.put(key, value);
-        return this;
     }
 
-    public boolean isSet(String key){
-        return entrys.containsKey(key);
+    @Override
+    public Configuration load(Reader reader)
+    {
+        return load( reader, null );
     }
 
-    public void save(){
-
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
-        Yaml yaml = new Yaml(new Representer(){
-            @Override
-            protected Node representMapping(Tag tag, Map<?, ?> mapping, DumperOptions.FlowStyle flowStyle) {
-                return super.representMapping(tag, mapping, DumperOptions.FlowStyle.BLOCK);
-            }
-        }, options);
-
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    @SuppressWarnings("unchecked")
+    public Configuration load(Reader reader, Configuration defaults)
+    {
+        Map<String, Object> map = yaml.get().loadAs( reader, LinkedHashMap.class );
+        if ( map == null )
+        {
+            map = new LinkedHashMap<>();
         }
-        yaml.dump(entrys, writer);
+        return new Configuration( map, defaults );
     }
 
-    public static YamlConfiguration loadConfiguration(File file){
-        return new YamlConfiguration(file);
+    @Override
+    public Configuration load(InputStream is)
+    {
+        return load( is, null );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Configuration load(InputStream is, Configuration defaults)
+    {
+        Map<String, Object> map = yaml.get().loadAs( is, LinkedHashMap.class );
+        if ( map == null )
+        {
+            map = new LinkedHashMap<>();
+        }
+        return new Configuration( map, defaults );
+    }
+
+    @Override
+    public Configuration load(String string)
+    {
+        return load( string, null );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Configuration load(String string, Configuration defaults)
+    {
+        Map<String, Object> map = yaml.get().loadAs( string, LinkedHashMap.class );
+        if ( map == null )
+        {
+            map = new LinkedHashMap<>();
+        }
+        return new Configuration( map, defaults );
     }
 }

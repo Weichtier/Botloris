@@ -13,18 +13,19 @@ public class TeamspeakBot {
     private PluginManager pluginManager;
     private TS3Api api;
 
-    private TeamspeakBot(String host, String username, String password, String nickname) {
+    private TeamspeakBot(String host, Integer port, Integer serverid, String username, String password, String nickname) {
 
         instance = this;
 
         final TS3Config config = new TS3Config();
         config.setHost(host);
+        config.setQueryPort(port);
 
         final TS3Query query = new TS3Query(config);
         query.connect();
         api = query.getApi();
         api.login(username, password);
-        api.selectVirtualServerById(1);
+        api.selectVirtualServerById(serverid);
         api.registerAllEvents();
         api.registerEvent(TS3EventType.TEXT_PRIVATE);
         api.setNickname(nickname);
@@ -49,6 +50,16 @@ public class TeamspeakBot {
         return pluginManager;
     }
 
+    public boolean reload(){
+        try {
+            pluginManager.unloadPlugins();
+            pluginManager.loadPlugins();
+        }catch (Exception exc){
+            return true;
+        }
+        return false;
+    }
+
     private void newPluginManager(){
         pluginManager = new PluginManager(api);
     }
@@ -57,12 +68,16 @@ public class TeamspeakBot {
         return instance;
     }
 
-    public static TeamspeakBot newInstance(String host, String username, String password, String nickname){
+    public static TeamspeakBot newInstance(String host, Integer port, Integer serverid, String username, String password, String nickname){
         if(instance == null){
-            new TeamspeakBot(host, username, password, nickname);
+            new TeamspeakBot(host, port, serverid, username, password, nickname);
             return instance;
         }else {
             return instance;
         }
+    }
+
+    public static TeamspeakBot newInstance(String host, Integer serverid, String username, String password, String nickname){
+        return newInstance(host, 10011, serverid, username, password, nickname);
     }
 }
