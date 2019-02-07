@@ -9,10 +9,9 @@ public class CommandReader extends TS3EventAdapter {
     public void onTextMessage(TextMessageEvent e) {
         TeamspeakBot bot = TeamspeakBot.getInstance();
         if(e.getMessage().startsWith("!")){
-
+            TeamspeakBot.getInstance().getLogger().info("User " + e.getInvokerName() + " [UUID=" + e.getInvokerUniqueId() + "] executed command " + e.getMessage().split(" ")[0]);
             if(e.getTargetMode().equals(TextMessageTargetMode.CLIENT) && e.getInvokerId() != bot.getApi().whoAmI().getId()){
                 bot.getPluginManager().getCommandHandler().handleCommand(TeamspeakBot.getInstance().getApi().getClientByUId(e.getInvokerUniqueId()), e.getMessage().substring(1));
-
             }else if((e.getTargetMode().equals(TextMessageTargetMode.CHANNEL) || e.getTargetMode().equals(TextMessageTargetMode.SERVER)) && e.getMessage().equalsIgnoreCase("!open")){
                 bot.getApi().sendPrivateMessage(e.getInvokerId(), "Commands here, please!");
             }

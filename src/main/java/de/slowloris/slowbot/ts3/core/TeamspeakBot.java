@@ -6,16 +6,23 @@ import com.github.theholywaffle.teamspeak3.TS3Query;
 import com.github.theholywaffle.teamspeak3.api.event.TS3EventType;
 import de.slowloris.slowbot.ts3.api.plugin.PluginManager;
 import de.slowloris.slowbot.ts3.core.commands.HelpCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TeamspeakBot {
 
     private static TeamspeakBot instance;
     private PluginManager pluginManager;
+    private Logger logger;
     private TS3Api api;
 
     private TeamspeakBot(String host, Integer port, Integer serverid, String username, String password, String nickname) {
 
         instance = this;
+
+        logger = LoggerFactory.getLogger(TeamspeakBot.class);
+
+        logger.info("Setting up Bot");
 
         final TS3Config config = new TS3Config();
         config.setHost(host);
@@ -30,13 +37,15 @@ public class TeamspeakBot {
         api.registerEvent(TS3EventType.TEXT_PRIVATE);
         api.setNickname(nickname);
 
-        pluginManager = PluginManager.newInstance(api);
+        newPluginManager();
         pluginManager.loadPlugins();
 
         pluginManager.registerListener(new CommandReader());
         pluginManager.registerCommand("help", new HelpCommand());
 
         api.sendChannelMessage( api.whoAmI().getNickname() + " is online!");
+
+        logger.info("Bot started");
     }
 
     public TS3Api getApi() {
@@ -61,7 +70,11 @@ public class TeamspeakBot {
     }
 
     private void newPluginManager(){
-        pluginManager = new PluginManager(api);
+        pluginManager = new PluginManager(api, logger);
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     public static TeamspeakBot getInstance() {

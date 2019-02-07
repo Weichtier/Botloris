@@ -1,20 +1,22 @@
 package de.slowloris.slowbot;
 
-import com.google.common.io.ByteStreams;
 import de.slowloris.slowbot.ts3.api.configuration.Configuration;
 import de.slowloris.slowbot.ts3.api.configuration.ConfigurationProvider;
 import de.slowloris.slowbot.ts3.api.configuration.YamlConfiguration;
 import de.slowloris.slowbot.ts3.core.TeamspeakBot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Main {
 
     private static File pluginfolder = new File("plugins");
+    private static Logger logger;
 
     public static void main(String[] args){
+
+        logger = LoggerFactory.getLogger(Main.class);
 
         Configuration configuration;
 
@@ -49,7 +51,7 @@ public class Main {
                 throw new RuntimeException("Unable to write configuration file", e);
             }
 
-            System.out.println("Please edit Config and restart.");
+            logger.warn("Please edit Config and restart.");
             System.exit(0);
             return;
         }
@@ -57,7 +59,7 @@ public class Main {
         try {
             configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
         } catch (IOException e) {
-            System.out.println("Config Error!");
+            logger.warn("Config Error!");
             return;
         }
 

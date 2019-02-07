@@ -4,8 +4,12 @@ import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.api.event.TS3Listener;
 import de.slowloris.slowbot.ts3.api.command.Command;
 import de.slowloris.slowbot.ts3.api.command.CommandHandler;
+import de.slowloris.slowbot.ts3.api.configuration.Configuration;
+import de.slowloris.slowbot.ts3.api.configuration.ConfigurationProvider;
+import de.slowloris.slowbot.ts3.api.configuration.YamlConfiguration;
 import de.slowloris.slowbot.ts3.core.TeamspeakBot;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +26,13 @@ public class PluginManager {
     private static PluginManager instance;
     private CommandHandler commandHandler;
     private TeamspeakBot teamspeakBot;
+    private Logger logger;
     private TS3Api api;
     private List<TeamspeakPlugin> plugins = new ArrayList<TeamspeakPlugin>();
 
-    public PluginManager(TS3Api api) {
+    public PluginManager(TS3Api api, Logger logger) {
+
+        this.logger = logger;
 
         teamspeakBot = TeamspeakBot.getInstance();
         this.api = api;
@@ -38,7 +45,7 @@ public class PluginManager {
             return;
         }
 
-        System.out.println("Loading Plugin");
+        System.out.println("Loading new Plugin");
 
         JarFile jar = new JarFile(file);
         Manifest manifest = jar.getManifest();
@@ -48,11 +55,17 @@ public class PluginManager {
 
         TeamspeakPlugin plugin = (TeamspeakPlugin) cl.newInstance();
         plugins.add(plugin);
-        plugin.setDataFolder("plugins/" + jar.getName().replaceAll(".jar", "") + "/");
+        Configuration pluginConfig = getPluginConfiguration(cl);
+
+        plugin.init(this, "plugins/" + pluginConfig.getString("name"));
         plugin.onEnable();
 
-        System.out.println("Loaded Plugin!");
+        logger.info("Loaded " + pluginConfig.getString("name") + " version " + pluginConfig.getString("version"));
 
+    }
+
+    public Configuration getPluginConfiguration(Class cl){
+        return ConfigurationProvider.getProvider(YamlConfiguration.class).load(cl.getClassLoader().getResourceAsStream("config.yml"));
     }
 
     public void loadPlugins(){
@@ -75,10 +88,10 @@ public class PluginManager {
 
     public void unloadPlugin(TeamspeakPlugin plugin){
         if(plugins.contains(plugin)){
-            System.out.println("Unloading Plugin!");
+            logger.info("Unloading Plugin!");
             plugin.onDisable();
             plugins.remove(plugin);
-            System.out.println("Unloaded Plugin!");
+            logger.info("Unloaded Plugin!");
         }
     }
 
@@ -104,13 +117,17 @@ public class PluginManager {
         api.addTS3Listeners(listener);
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     public static PluginManager getInstance() {
         return instance;
     }
 
-    public static PluginManager newInstance(TS3Api api){
+    public static PluginManager newInstance(TS3Api api, Logger logger){
         if(instance == null){
-            instance = new PluginManager(api);
+            instance = new PluginManager(api, logger);
             return instance;
         }else {
             return instance;

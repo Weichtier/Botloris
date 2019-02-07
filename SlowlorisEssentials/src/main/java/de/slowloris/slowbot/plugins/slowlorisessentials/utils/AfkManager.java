@@ -15,7 +15,7 @@ public class AfkManager {
 
     public static void startTiming(){
         final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(AfkManager::kickAfk, 0, afkTime / 10, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(AfkManager::kickAfk, 0, afkTime, TimeUnit.MILLISECONDS);
     }
 
     public static void setAfkTime(long afkTime) {
