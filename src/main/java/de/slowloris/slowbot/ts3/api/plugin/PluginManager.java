@@ -45,7 +45,7 @@ public class PluginManager {
             return;
         }
 
-        System.out.println("Loading new Plugin");
+        logger.info("Loading new Plugin");
 
         JarFile jar = new JarFile(file);
         Manifest manifest = jar.getManifest();
@@ -65,7 +65,7 @@ public class PluginManager {
     }
 
     public Configuration getPluginConfiguration(Class cl){
-        return ConfigurationProvider.getProvider(YamlConfiguration.class).load(cl.getClassLoader().getResourceAsStream("config.yml"));
+        return ConfigurationProvider.getProvider(YamlConfiguration.class).load(cl.getClassLoader().getResourceAsStream("plugin.yml"));
     }
 
     public void loadPlugins(){

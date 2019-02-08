@@ -50,4 +50,17 @@ public class Utils {
         }
     }
 
+    public static void checkSqlTables(){
+        if(Main.getSql().isConnected()){
+            Main.getSql().runSql2("CREATE TABLE IF NOT EXISTS `ranksync` (\n" +
+                    " `uuid` varchar(32) COLLATE utf8_bin NOT NULL,\n" +
+                    " `groups` varchar(512) COLLATE utf8_bin NOT NULL\n" +
+                    ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin\n");
+
+            Main.getInstance().getLogger().info("Created table \"ranksync\"");
+        }else {
+            Main.getInstance().getLogger().warn("Mysql not connected!");
+        }
+    }
+
 }

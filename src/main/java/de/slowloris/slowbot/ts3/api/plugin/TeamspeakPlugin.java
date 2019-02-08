@@ -47,17 +47,14 @@ public abstract class TeamspeakPlugin {
         this.dataFolder = dataFolder;
         this.configFile = new File(dataFolder, "config.yml");
 
-        if(!this.configFile.exists()){
-            this.configFile.getParentFile().mkdirs();
-            try {
-                this.configFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         try {
-            this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            if(!this.configFile.exists()){
+                this.configFile.getParentFile().mkdirs();
+                this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load("");
+            }else {
+                this.config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            }
+
         } catch (IOException e) {
             throw new RuntimeException("Cannot read configuration file", e);
         }

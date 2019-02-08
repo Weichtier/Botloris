@@ -1,12 +1,21 @@
+Mysql:
+  Activated: true
+  Host: localhost
+  Port: 3306
+  Username: root
+  Password: ''
+  Database: ts3bot
+  Ranksync:
+    CopyGroupsAtRegister: true
 Welcomemessage:
   Activated: true
   Message: Welcome on this Server!
 Afk:
-  ChannelId: 280
+  ChannelId: 0
   MovedMessage: You got moved because you were 10 minutes away!
-  AfkTime: 10
+  AfkTime: 600
   BlockedGroups:
-  - '128'
+  - '6'
 Admin:
   AdminGroupId: 6
 Usercounter:
